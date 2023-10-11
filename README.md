@@ -1,5 +1,5 @@
 # CS357_ProgrammingProject
-(fingers crossed) build a regex machine (no libraries) in python and maybe make the UI a web app?
+(fingers crossed) build a regex machine (no libraries) in Python and maybe make the UI a web app?
 
 
 Useful Links:
