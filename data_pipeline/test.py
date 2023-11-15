@@ -32,6 +32,12 @@ def is_unit(term):
     return is_literal(term[0]) or is_set(term)
 
 
+def split_set(set_head):
+    set_inside = set_head[1:-1]
+    set_terms = list(set_inside)
+    return set_terms
+
+
 def split_expr(expr):
     head = None
     operator = None
@@ -53,7 +59,15 @@ def split_expr(expr):
     return head, operator, rest
 
 def does_unit_match(expr, string):
-    return expr[0] == string[0]
+    head, operator, rest = split_expr(expr)
+
+    if is_literal(head):
+        return expr[0] == string[0]
+    elif is_set(head):
+        set_terms = split_set(head)
+        return string[0] in set_terms
+
+    return False
 
 
 def match_expr(expr, string, match_length=0):
