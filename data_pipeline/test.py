@@ -74,6 +74,22 @@ def split_expr(expr):
 
     rest = expr[last_expr_pos:] #+ 1:]
     return head, operator, rest
+    
+#Added match. Checks if program is empty or null. If the function is it will return false
+def match(expr, string):
+    if not string:  # Check if the string is null or empty
+        return [False, None, None]
+
+    match_pos = 0
+    matched = False
+    max_match_pos = len(string) - 1
+    while not matched and match_pos < max_match_pos:
+        [matched, match_length] = match_expr(expr, string[match_pos:])
+        if matched:
+            return [matched, match_pos, match_length]
+        match_pos += 1
+    return [False, None, None]
+
 
 def does_unit_match(expr, string):
     head, operator, rest = split_expr(expr)
@@ -168,6 +184,14 @@ def main():
     else:
         print(f'match_expr({expr}, {string}) = False')
 
+   # Test with a None/Null string
+    expr = '1(cat|dog)2'
+    string = None
+    [matched, match_pos, match_length] = match(expr, string)
+    if matched:
+        print(f'match_expr({expr}, {string}) = {string[match_pos:match_pos + match_length]}')
+    else:
+        print(f'match_expr({expr}, {string}) = False')
 
 if __name__ == '__main__':
     main()
