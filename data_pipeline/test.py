@@ -1,25 +1,40 @@
-
 #define operators
+def is_start(char):
+        return char == '^'
+
+def is_end(char):
+        return char == '$'
+
+def is_escape_sequence(term):
+    return is_escape(term[0])
+
+def is_escape(char):
+    return char == '\\'
+
+#star (zero or more occurences)
 def is_star(char):
     return char == '*'
 
-def is_plus(char):
+#plus (one or more occurences)
+def is_plus(char): 
     return char == '+'
 
+#question (zero or one occurences)
 def is_question(char):
     return char == '?'
 
 def is_operator(char):
     return is_star(char) or is_plus(char) or is_question(char)
 
-
+#dot (matches any character)
 def is_dot(char):
     return char == '.'
 
-
+#open (grouping of regular expression for precedence)
 def is_open_alternate(char):
     return char == '('
 
+#close (grouping of regular expression for precedence)
 def is_close_alternate(char):
     return char == ')'
 
@@ -37,6 +52,8 @@ def is_set(term):
 def is_literal(char):
     return char.isalpha() or char.isdigit()
 
+def is_alternate(term):
+    return is_open_alternate(term[0]) and is_close_alternate(term[-1])
 
 def is_unit(term):
     return is_literal(term[0]) or is_dot(term[0]) or is_set(term)
@@ -56,7 +73,7 @@ def split_expr(expr):
     head = None
     operator = None
     rest = None
-    last_expr_pos = None
+    last_expr_pos = 0 #CHANGED FROM NONE
 
     if is_open_set(expr[0]):
         last_expr_pos = expr.find(']') + 1
@@ -64,6 +81,9 @@ def split_expr(expr):
     elif is_open_alternate(expr[0]):
         last_expr_pos = expr.find(')') + 1
         head = expr[:last_expr_pos]
+    elif is_escape(expr[0]):
+        last_expr_pos += 2
+        head = expr[:2]
     else:
         last_expr_pos = 1
         head = expr[0]
@@ -78,15 +98,36 @@ def split_expr(expr):
 def does_unit_match(expr, string):
     head, operator, rest = split_expr(expr)
 
+    #CHANGED
+    if len(string) == 0:
+           return False
     if is_literal(head):
-        return expr[0] == string[0]
+        return expr[0] == string [0]
     elif is_dot(head):
         return True
+    elif is_escape_sequence(head):
+        if head == '\\a':
+            return string[0].isalpha()
+        elif head == '\\d':
+            return string[0].isdigit()
+        else:
+            return False
     elif is_set(head):
         set_terms = split_set(head)
         return string[0] in set_terms
-
+    
     return False
+
+    #OLD
+    #if is_literal(head):
+    #    return expr[0] == string[0]
+    #elif is_dot(head):
+    #    return True
+    #elif is_set(head):
+    #    set_terms = split_set(head)
+    #    return string[0] in set_terms
+
+    #return False
 
 
 def match_multiple(expr, string, match_length, min_match_length=None, max_match_length=None):
@@ -126,10 +167,26 @@ def match_plus(expr, string, match_length):
 def match_question(expr, string, match_length):
     return match_multiple(expr, string, match_length, 0, 1)
 
+#CHANGED
+def match_alternate(expr, string, match_length):
+    head, operator, rest = split_expr(expr)
+    options = split_alternate(head)
+
+    for option in options:
+        [matched, new_match_length] = match_expr(option + rest, match_length)
+        if matched:
+            return [matched, new_match_length]
+    return [False, None]
 
 def match_expr(expr, string, match_length=0):
     if len(expr) == 0:
         return [True, match_length]
+    #CHANGED
+    elif is_end(expr[0]):
+        if len(string) == 0:
+            return [True, match_length]
+        else:
+            return [False, None]
     
     head, operator, rest = split_expr(expr)
 
@@ -139,6 +196,8 @@ def match_expr(expr, string, match_length=0):
         return match_plus(expr, string, match_length)
     elif is_question(operator): #question itnerval [0,1]
         return match_question(expr, string, match_length)
+    elif is_alternate(head): #CHANGED
+        return match_alternate(expr, string, match_length)
     elif is_unit(head):
         if does_unit_match(expr, string):
             return match_expr(rest, string[1:], match_length + 1)
@@ -148,6 +207,22 @@ def match_expr(expr, string, match_length=0):
 
 
 def match(expr, string):
+    #CHANGED
+    match_pos = 0
+    matched = False
+    if is_start(expr[0]):
+        max_match_pos = 0
+        expr = expr[1:]
+    else:
+        max_match_pos = len(string) - 1
+
+    #while not matched and match_pos <= max_match_pos:
+    #    [matched, match_length] = match_expr(expr, string[match_pos:])
+    #    if matched:
+    #        return [matched, match_pos, match_length]
+    #    match_pos += 1
+    #return [False, None, None]
+
     #expr error checking, make sure expr is a valid string
     if not expr:
         print("Regex does not exist.")
@@ -164,10 +239,11 @@ def match(expr, string):
         print("Please enter the string you would like to check in the format: 'string'")
         return [False, None, None]
     
+    #CHANGED comented out the match_pos and matched
     #actual match() code
-    match_pos = 0
-    matched = False
-    max_match_pos = len(string) - 1
+    #match_pos = 0
+    #matched = False
+    #max_match_pos = len(string) - 1
     while not matched and match_pos < max_match_pos:
         [matched, match_length] = match_expr(expr, string[match_pos:])
         if matched:
@@ -186,8 +262,8 @@ def check_str(str_):
         
 
 def main():
-    regex = 5 #'a[123]*c'
-    string = 'abc'
+    regex = 'a*a'
+    string = 'a'
     #print(string)
     [matched, match_pos, match_length] = match(regex, string)
     if matched:
