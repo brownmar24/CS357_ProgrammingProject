@@ -194,36 +194,11 @@ def match(regex, string):
         if matched:
             return [matched, match_pos, match_length]
         match_pos += 1
-    return [False, None, None]
-
-     #String error checking, make sure string is a valid string
-    #if not string:
-    #    print("String does not exist.")
-    #    return [False, None, None]
-    #elif type(string) != str:
-    #    print("Please enter the string you would like to check in the format: 'string'")
-    #    return [False, None, None]
-    
-    #while not matched and match_pos < max_match_pos:
-    #    [matched, match_length] = match_regex(regex, string[match_pos:])
-    #    if matched:
-    #        return [matched, match_pos, match_length]
-    #    match_pos += 1
-    #return [False, None, None]
-
-
-#def check_str(str_):
-#    if str_ == None:
-#        print("One of your inputs does not exist.")
-#        return [False, None, None]
-#    elif type(str_) != str:
-#        print("Please enter the string you would like to check in the format: 'string contents here'")
-#        return [False, None, None]
-      
+    return [False, None, None]      
 
 def main():
-    regex = '^[ABCDEFGHIJKLMNOPQRSTUVWXYZ][abcdefghijklmnopqrstuvwxyz]' #'^abba+(yes|no)' #'^http://(\\a|\\d)+.(com|net|org)'
-    string = 'abb'#'aabaa' #'http://clumsy123computer.com/hey/there'
+    regex = '^[ABC][abc]+[012][012][012][012]$'
+    string = 'Ab1201'
     [matched, match_pos, match_length] = match(regex, string)
     if matched:
         #print(f'match_regex({regex}, {string}) = {string[match_pos:match_pos + match_length]}')
@@ -234,5 +209,6 @@ def main():
 
 #A-Z All capital alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #a-z All lowercase alphabet: abcdefghijklmnopqrstuvwxyz
+#0-9 Digits: 0123456789
 if __name__ == '__main__':
     main()
