@@ -1,6 +1,8 @@
 # CS357_ProgrammingProject
 Margaret Brown & Ruth Shepard
+
 CS 357: Theory of Computation
+
 Programming Project: Regular Expression Engine
 
 Resources: 
