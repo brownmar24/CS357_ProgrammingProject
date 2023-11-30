@@ -1,6 +1,5 @@
 # CS357_ProgrammingProject
-Margaret Brown & Ruth Shepard
-
+# Margaret Brown & Ruth Shepard
 CS 357: Theory of Computation
 
 Programming Project: Regular Expression Engine
@@ -8,6 +7,8 @@ Programming Project: Regular Expression Engine
 main.py: the file which runs test cases and prints the appropriate response, please start here.
 
 regex_engine.py: the file with the code that makes the regex engine functional.
+
+
 
 
 Resources: 
